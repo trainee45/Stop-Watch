@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>stopWatch.html</title>
+     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One" rel="stylesheet" type="text/css">
+    <style>
+      form {
+        width: 300px;
+      }
+
+      div .greet {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+	  
+	  canvas {
+		
+        position: absolute;
+        top: 85%; /* was 50%*/
+        transform: translate(-50%,-50%);
+        width: 170px;
+        height: 170px;
+       /* border: 10px solid red
+        border-radius: 10px;
+        background-color: #eee;
+        background-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.1));*/
+		
+	}
+	  
+	   .hidden {
+        left: -50%;
+      }
+
+      .showing {
+        left: 50%;
+	}
+	.timepiece {
+        left: -50%;
+	}
+	
+      
+  /*    div {
+      border: 1px solid black;
+  display: inline-block;
+  font-size: 2rem;
+  justify-content: center;
+  align-items: center;
+} */
+
+div .spinner {
+	height: inherit;
+	
+  background-color: white;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: inline-block;/*inline-block;*/
+  font-size: 5rem;
+   }
+
+      button {
+        width: 120px
+        height: 20px;
+        font-size: 1rem;
+       }
+      
+      .highlight {
+		background-color: yellow;
+		font-weight: bold;
+		/*font-style: italic; */
+		text-decoration: none;
+		
+		}
+		
+	.highlightgreen {
+	background-color: lightgreen;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+	
+	}
+	
+.yellowonly {
+	border: none;
+		background-color: yellow;
+		font-weight: bold;
+		font-style: italic;
+		
+		}
+		
+ .special {
+  background-color: rgb(79,185,227);
+  padding: 10px;
+  color: #fff;
+}
+
+ .clock, .info {
+  background-color: yellow;
+  padding: 10px;
+  color: black;
+  border: 3px solid rgb(255,84,104);
+  border-radius: .5em;
+  width: 400px;
+  text-align: center;
+}
+
+    </style>
+  </head>
+  <body>
+  
+    <div style="border: 3px solid red; padding: 25px; font-size: 2rem;  display: inline-block; text-align: center" id="time">
+    <h2 style="text-align: center">Stop Watch</h2>
+    <p class="clock">
+    
+    
+    </p>
+    
+    <button id="start">Start the Clock</button>
+    <button id="stop">Stop the Clock</button>
+    <button id="reset">RESET</button>
+   <p class="info"></p>
+   
+   <div class="spinner">
+     <img src="images/eeyore.JPG" >  <!-- ↻ -->
+   </div> <!--</div> was here-->
+   
+    <canvas class="myCanvas" width="150" height="150">
+ 		 <p>Add suitable fallback here.</p>
+	 </canvas>
+	 
+   </div>
+    
+   
+	
+   
+    <button id="myclock">Show Clock</button>
+	
+   
+    <script>
+    let createClock;
+    let rAF;
+    const stopBtn = document.querySelector('#stop');
+      const startBtn = document.querySelector('#start');
+    const resetBtn = document.querySelector('#reset');  
+	const showClockBtn = document.querySelector('#myclock');
+	const clockBox = document.querySelector('section.timepiece');
+	//const canvas = document.querySelector('.myCanvas');
+	const canvas = document.querySelector('.myCanvas');
+	const width = canvas.width;
+	//gives us the viewport width
+	const height = canvas.height;
+	//now we have a canvas that fills the entire width and height of the browser window! To draw onto the canvas we need to get a special reference to the drawing area called a context. This is done using the HTMLCanvasElement.getContext() method, which for basic usage takes a single string as a parameter representing the type of context you want to retrieve.
+   let startTime; 
+   let showtime;
+   let elapsedTime;
+   let stop = 0;
+   let hours = 0;
+   let minutes = 0;
+   let seconds = 0;
+   let secondCount = 0;
+   let timeString = "";
+   let spin = 0;
+   let toggle = false; //you get undefined error if not set to a value
+   //alert(spin);
+   
+   //let createClock;
+   
+  function displayTime(startTime) {
+   //if (!stop) {
+   //	alert('display time function');
+   
+  
+    	//let date = new Date();
+    	showtime = Date.now() - startTime;
+     // Calculate current hours, minutes, and seconds
+        let hours = Math.floor(secondCount/3600);
+        let minutes = Math.floor((secondCount % 3600)/60);
+        let seconds = Math.floor(secondCount % 60)
+
+        // Display a leading zero if the values are less than ten
+        let displayHours = (hours < 10) ? '0' + hours : hours;
+        let displayMinutes = (minutes < 10) ? '0' + minutes : minutes;
+        let displaySeconds = (seconds < 10) ? '0' + seconds : seconds;
+
+        // Write the current stopwatch display time into the display paragraph
+        timeString = displayHours + ':' + displayMinutes + ':' + displaySeconds;
+
+        // Increment the second counter by one
+        secondCount++;
+    	
+   /*alert (startTime); 
+    //alert (showtime); */	document.querySelector('.clock').textContent = timeString;
+    document.querySelector('.info').textContent = 'Tap the spinner to PAUSE the counter!';
+    }//end of displayTime function
+    
+    //event handler click event handled by the anonymous function
+    
+    
+    
+    function startWatch () {
+    spin = 1;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    stopBtn.style.backgroundColor = 'pink';
+    //stopBtn.setAttribute('style','background-color: yellow');
+    //start the spinner
+    draw();
+    while (!stop) {
+    startTime = Date.now();
+   //alert(startTime);
+   //async event loop,
+    createClock = setInterval(displayTime, 1000, startTime);
+   		return createClock;
+   		}//end of while loop
+   		
+   	}//end of startWatch function
+   	
+   	function stopWatch (spin) {
+   	spin = 0;
+   stopBtn.disabled = true;
+   resetBtn.disabled = false;
+   			stop = 1; 
+   			showtime = 0;
+   			//stop the clock ticking
+   			clearInterval(createClock);
+   			//stop the spinner note Cancel NOT clear
+   		cancelAnimationFrame(rAF);
+   			
+   		let date = new Date();
+        let time = date.toLocaleTimeString();
+   		document.querySelector('.info').textContent = 'Count down was started at: ' + time;
+   		}//end of stopWatch function
+   		
+   startBtn.onclick = startWatch;
+    
+   stopBtn.onclick = stopWatch;//end stopBtn.addEvent Listener 	
+   
+   showClockBtn.onclick = clock;//clock
+    
+       
+    resetBtn.addEventListener('click', function (spin) {
+	   resetBtn.disabled = true;
+  	   startBtn.disabled = false;
+	   stopBtn.disabled = true;
+   			stop = 0; 
+   			showtime = 0;  
+	   document.querySelector('.clock').textContent = "00:00:00";  
+	   document.querySelector('.info').textContent = "";
+	   startBtn.style.backgroundColor = 'lightgreen';
+	     secondCount = 0;
+		});//end curly resetBtn
+		
+		
+    //start the clock
+  
+  /* setTimeout(function() {
+  alert('World');
+}, 0);
+
+alert('Hello');*/
+   //requestAnimationFrame js
+   
+  const spinner = document.querySelector('div.spinner');
+let rotateCount = 0;
+let startSpinTime = null;
+let done = 0;
+//let rAF;   
+//let spin;
+
+
+/*spinner.addEventListener('click', function () {
+alert('The Stop Watch is PAUSED!');
+alert('going to stopWatch function');
+	stopWatch;
+	
+}); //end spinner.addEventListener */
+
+spinner.onclick = function () {
+	alert('❤️ Hi Jan. I love you! ❤️  The Stop Watch counter is PAUSED! Eyeore says he\'s getting dizzy!');
+/*	const newbtn = 
+  		document.createElement('button');
+  		
+  		newbtn.textContent = 'Continue';
+		if (!done) document.querySelector('.info').appendChild(newbtn);
+		done = 1; */
+		
+	}//end spinner dblclick function
+/*spinner.addEventListener('dblclick', function() {
+       alert('double click of spinner');
+       
+       
+            });
+ //end spinner.addEventListener dbl lick */
+
+//pause the stop watch with a double-click
+
+
+ function draw(timestamp) {
+ 	if (!startSpinTime) {
+   startSpinTime = timestamp;
+  }
+//set the rotateCount to a value to rotate the spinner by (the current timestamp, take the starting timestamp, divided by three so it doesn't go too fast):
+  rotateCount = (timestamp - startSpinTime) / 3;
+  //so the circle animation can continue uninterrupted, at a sensible, low value
+  if (rotateCount > 359) {
+  rotateCount %= 360;
+}
+//rotate the spinner:
+spinner.style.transform = `rotate(${rotateCount}deg)`;
+//setting the variable defined earlier to an active requestAnimation() call, which takes the draw() function as its parameter. This starts the animation off, constantly running the draw() function at a rate as near 60 FPS as possible.
+rAF = requestAnimationFrame(draw);
+
+}  //end curly function draw  
+  //draw();
+ 
+ function clock() {
+	// alert(toggle);
+	 if(toggle) {
+		showClockBtn.textContent = 'Show Clock';
+	//	btn.style.backgroundColor = 'red';
+	toggle = false;
+	canvas.setAttribute('class','hidden');
+} else if (!toggle) {
+	toggle = true;
+	showClockBtn.textContent = 'Hide Clock'
+	//clockBox.setAttribute('class','showing'); 
+	timepiece();
+ }//end else if statement
+ }//end clock function
+ 
+function timepiece () {
+	if (toggle) {
+	canvas.setAttribute('class','showing');
+	//alert('clockBox will now show');
+	var now = new Date();
+ // var ctx = document.getElementById('#time').getContext('2d');
+  
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.clearRect(0, 0, 150, 150);
+  ctx.translate(75, 75);
+  ctx.scale(0.4, 0.4);
+  ctx.rotate(-Math.PI / 2);
+  ctx.strokeStyle = 'black';
+  ctx.fillStyle = 'white';
+  ctx.lineWidth = 8;
+  ctx.lineCap = 'round';
+
+  // Hour marks
+  ctx.save();
+  for (var i = 0; i < 12; i++) {
+    ctx.beginPath();
+    ctx.rotate(Math.PI / 6);
+    ctx.moveTo(100, 0);
+    ctx.lineTo(120, 0);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Minute marks
+  ctx.save();
+  ctx.lineWidth = 5;
+  for (i = 0; i < 60; i++) {
+    if (i % 5!= 0) {
+      ctx.beginPath();
+      ctx.moveTo(117, 0);
+      ctx.lineTo(120, 0);
+      ctx.stroke();
+    }
+    ctx.rotate(Math.PI / 30);
+  }//end for loop
+  ctx.restore();
+ 
+  var sec = now.getSeconds();
+  var min = now.getMinutes();
+  var hr  = now.getHours();
+  hr = hr >= 12 ? hr - 12 : hr;
+
+  ctx.fillStyle = 'black';
+
+  // write Hours
+  ctx.save();
+  ctx.rotate(hr * (Math.PI / 6) + (Math.PI / 360) * min + (Math.PI / 21600) *sec);
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(-20, 0);
+  ctx.lineTo(80, 0);
+  ctx.stroke();
+  ctx.restore();
+
+  // write Minutes
+  ctx.save();
+  ctx.rotate((Math.PI / 30) * min + (Math.PI / 1800) * sec);
+  ctx.lineWidth = 10;
+  ctx.beginPath();
+  ctx.moveTo(-28, 0);
+  ctx.lineTo(112, 0);
+  ctx.stroke();
+  ctx.restore();
+ 
+  // Write seconds
+  ctx.save();
+  ctx.rotate(sec * Math.PI / 30);
+  ctx.strokeStyle = '#D40000';
+  ctx.fillStyle = '#D40000';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(-30, 0);
+  ctx.lineTo(83, 0);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, 10, 0, Math.PI * 2, true);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(95, 0, 10, 0, Math.PI * 2, true);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+  ctx.arc(0, 0, 3, 0, Math.PI * 2, true);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.lineWidth = 14;
+  ctx.strokeStyle = '#325FA2';
+  ctx.arc(0, 0, 142, 0, Math.PI * 2, true);
+  ctx.stroke();
+
+  ctx.restore();
+
+  window.requestAnimationFrame(timepiece);
+}//end if while loop
+}//end timepiece function 
+//window.requestAnimationFrame(clock); 
+  
+    </script>
+  </body>
+</html>
